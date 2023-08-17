@@ -2,15 +2,22 @@
 
 namespace Alura\DesignPattern;
 
+use Alura\DesignPattern\ActionsOnMakeOrder\ActionOnMakeOrder;
+
 class MakeOrderHandler
 {
+    /**
+     * @var ActionOnMakeOrder[]
+     */
+    public array $actionsOnMakeOrder = [];
     public function __construct(
         //any dependencies that u will need
     )
     {
     }
 
-    public function execute(MakeOrder $makeOrder) {
+    public function execute(MakeOrder $makeOrder): void
+    {
         $budget = new Budget();
         $budget->value = $makeOrder->getValue();
         $budget->quantityItems = $makeOrder->getAmountItems();
@@ -19,7 +26,8 @@ class MakeOrderHandler
         $order->clientName = $makeOrder->getClientName();
         $order->createdAt = new \DateTimeImmutable();
 
-        echo "Order: {$order->clientName}, Date: {$order->createdAt->format('d/m/Y')}, Value: {$budget->value}, Quantity Items: {$budget->quantityItems}". PHP_EOL;
-        echo "Sending email".PHP_EOL;
+        foreach ($this->actionsOnMakeOrder as $action) {
+            $action->execute($order);
+        }
     }
 }
